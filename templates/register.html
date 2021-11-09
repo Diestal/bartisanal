@@ -22,7 +22,11 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
-        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        {% if current_user.tipo_id == 2: %}
+          {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        {% else: %}
+          {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+        {% endif %}
       </div>
     </div>
   </div>

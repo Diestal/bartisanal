@@ -7,11 +7,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, CrearProducto
+from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, CrearProducto, RegisterUserForm
 from flask_gravatar import Gravatar
 
-from login import Login
-
+# Instanciaciones de frameworks y variables de API (.env)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
@@ -26,7 +25,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
+# Cargador de usuarios
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -110,6 +109,8 @@ class Resena(db.Model):
 
 db.create_all()
 
+# Decoradores para el poryecto
+
 
 def admin_only(f):
     @wraps(f)
@@ -119,32 +120,82 @@ def admin_only(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
+# Configuración de las rutas del servidor
 @app.route("/")
 def home():
     productos = db.session.query(Producto).all()
 
     return render_template("index.html", productos=productos, current_user=current_user)
 
+# Módulo de Registro y autenticación de usuarios
+@app.route("/register-user", methods=['POST', 'GET'])
+@admin_only
+def register_user():
+    form = RegisterUserForm()
+
+    if form.validate_on_submit():
+
+        depto = Departamento.query.get(form.dpto.data.title())
+        ciudad = Departamento.query.get(form.city.data.capitalize())
+        depto_id = 0
+        ciudad_id = 0
+
+        if depto and ciudad and depto.id == ciudad.id_depto:
+            depto_id = depto.id
+            ciudad_id = ciudad.id
+            print("Correcto!")
+
+        else:
+            flash(
+                "Error en el ingreso de la ciudad o el departamento.\nPor favor no ingresar ciudad con tilde, y verificar"
+                "su respuesta")
+
+        if User.query.filter_by(email=form.email.data).first():
+            print(User.query.filter_by(email=form.email.data).first())
+            # User already exists
+            flash("¡Ya te has registrado con ese email, más bien inicia sesión!")
+            return redirect(url_for('login'))
+
+        hash_and_salted_password = generate_password_hash(
+            form.password.data,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+        new_user = User(
+            tipo_id=form.tipo_usuario.data,
+            depto_id=depto_id,
+            ciudad_id=ciudad_id,
+            email=form.email.data,
+            contrasena=hash_and_salted_password,
+            nombre=form.name.data,
+            apellido=form.last_name.data,
+            sexo=form.sex.data,
+            numero=form.number.data,
+            fecha_nacimiento=form.born_date.data,
+            direccion=form.address.data
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return "<script>window.alert('¡Usuario Nuevo registrado!')</script>"
+        # return redirect(url_for("get_all_posts"))
+    return render_template("register.html", form=form, current_user=current_user)
 
 @app.route("/register", methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
 
-    deptos = db.session.query(Departamento).all()
-    deptos_list = [(d.id, d.nombre_depto) for d in deptos]
-    form.dpto.choices = deptos_list
-
-    value = form.dpto.data
-    chosen_depto_id = db.session.query(Departamento).filter(Departamento.id == 1)
-    print(value)
-
-    cities = db.session.query(Ciudad).filter(Ciudad.id_depto == 1).all()
-    cities_list = [(d.id, d.nombre_ciudad) for d in cities]
-    form.city.choices = cities_list
-    chosen_city = Ciudad.query.filter_by(nombre_ciudad=form.city.data).first()
-
     if form.validate_on_submit():
+
+        depto = Departamento.query.filter(Departamento.nombre_depto == form.dpto.data.title())
+        ciudad = Departamento.query.filter(Ciudad.nombre_ciudad == form.city.data.capitalize())
+
+        if depto.id == ciudad.id_depto:
+            depto_id = depto.id
+            ciudad_id = ciudad.id
+
+        else:
+            flash("Error en el ingreo de la ciudad o el departamento.\nPor favor no ingresar ciudad con tilde, y verificar"
+                  "su respuesta")
 
         if User.query.filter_by(email=form.email.data).first():
             print(User.query.filter_by(email=form.email.data).first())
@@ -159,8 +210,8 @@ def register():
         )
         new_user = User(
             tipo_id=1,
-            depto_id=1,
-            ciudad_id=1,
+            depto_id=depto_id,
+            ciudad_id=ciudad_id,
             email=form.email.data,
             contrasena=hash_and_salted_password,
             nombre=form.name.data,
@@ -172,9 +223,15 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        return "<script>window.alert('¡Se ha registrado con éxito!, a continuación se iniciara sesión.')</script>"
         login_user(new_user)
         # return redirect(url_for("get_all_posts"))
     return render_template("register.html", form=form, current_user=current_user)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return "<script>window.alert('Usted acaba de cerrar sesión.')</script>", redirect(url_for('home'))
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -194,10 +251,14 @@ def login():
             return redirect(url_for('login'))
         else:
             login_user(user)
-            return redirect(url_for('home'))
+            if user.sexo == "F":
+                return f"<script>window.alert('¡Bienvenida, {user.nombre}!')</script>", redirect(url_for('home'))
+            else:
+                return f"<script>window.alert('¡Bienvenido, {user.nombre}!')</script>", redirect(url_for('home'))
     return render_template("login_1.html", form=form, current_user=current_user)
 
 
+# Módulo de catálogo
 @app.route("/producto/<int:prod_id>", methods=["GET", "POST"])
 def show_prod(prod_id):
     form = CommentForm()
@@ -267,15 +328,19 @@ def editar_prod(prod_id):
 
     return render_template("nuevo_prod.html", form=edit_prod, is_edit=True, current_user=current_user)
 
-
-@app.route('/logout')
-def logout():
-    logout_user()
+@app.route("/eliminar-producto/<int:prod_id>", methods=['GET', 'POST'])
+def del_prod(prod_id):
+    producto = Producto.query.get(prod_id)
+    db.session.delete(producto)
+    db.session.commit()
     return redirect(url_for('home'))
 
+# Módulo de pasarela de compra
 
+# Módulo CRUD por API
 
+# Módulo de reportes
 
-
+# Inicialización de servidor
 if __name__ == "__main__":
     app.run(debug=True)

@@ -45,13 +45,41 @@ class RegisterForm(FlaskForm):
     )
     born_date = DateField("Fecha de Nacimiento", format='%Y-%m-%d', validators=[DataRequired()])
     number = StringField("Celular", validators=[DataRequired()])
-    dpto = SelectField("Departamento", coerce=int, validators=[InputRequired()])
-    city = SelectField("Ciudad", coerce=int, validators=[InputRequired()])
+    dpto = StringField("Departamento", validators=[InputRequired()])
+    city = StringField("Ciudad", validators=[InputRequired()])
     address = StringField("Dirección de domicilio", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Contraseña", validators=[DataRequired()])
     submit = SubmitField("Registrarse")
 
+class RegisterUserForm(FlaskForm):
+    name = StringField("Nombre", validators=[DataRequired()])
+    last_name = StringField("Apellido", validators=[DataRequired()])
+    sex = RadioField(
+        "Sexo",
+        choices=[
+            ("M", 'Masculino'),
+            ('F', 'Femenino')
+        ],
+        coerce=str
+    )
+    born_date = DateField("Fecha de Nacimiento", format='%Y-%m-%d', validators=[DataRequired()])
+    number = StringField("Celular", validators=[DataRequired()])
+    dpto = StringField("Departamento", validators=[InputRequired()])
+    city = StringField("Ciudad", validators=[InputRequired()])
+    address = StringField("Dirección de domicilio", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Contraseña", validators=[DataRequired()])
+    tipo_usuario = RadioField(
+        "Tipo de usuario",
+        choices=[
+            (1, 'Usuario'),
+            (2, 'Administrador'),
+            (3, 'Empleado')
+        ],
+        coerce=int
+    )
+    submit = SubmitField("Resgistrar usuario")
 
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired()])
