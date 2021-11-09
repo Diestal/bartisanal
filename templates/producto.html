@@ -4,10 +4,13 @@
 {% block content %}
 {% include "header.html" %}
 <!-- Page Header -->
-<header class="masthead" style="background-image: url('{{prod.img_url}}')">
+<header class="masthead">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
+            <div class="prod-feat col-lg-5 col-md-6 col-sm-3 mx-auto">
+                <div class="white-box text-center"><img src="{{ prod.imagen }}" class="img-responsive"></div>
+            </div>
             <div class="col-lg-8 col-md-10 mx-auto">
                 <div class="post-heading">
                     <h1>{{prod.nombre_producto}}</h1>
@@ -16,6 +19,12 @@
                     <span class="meta">Creado el {{prod.fecha_creacion}}</span>
                 </div>
             </div>
+            <span class="meta">
+                <button class="btn btn-dark btn-rounded mr-1" data-toggle="tooltip" title="" data-original-title="Add to cart">
+                    <i class="fa fa-shopping-cart"></i>
+                </button>
+                <button class="btn btn-secondary btn-rounded">Comprar ahora</button>
+            </span>
         </div>
     </div>
 </header>
@@ -27,7 +36,7 @@
             <div class="col-lg-8 col-md-10 mx-auto">
                 {{ prod.descr_producto|safe }}
                 <hr>
-                {% if current_user.tipo_id != 1 %}
+                {% if current_user.tipo_id == 3 or current_user.tipo_id == 2 %}
                 <div class="clearfix">
                     <a class="btn btn-primary float-right" href="{{url_for('editar_prod', prod_id=prod.id)}}">Editar
                         producto</a>

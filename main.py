@@ -17,6 +17,7 @@ app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
+app._static_folder = 'static/'
 
 ## Conexión a la base de datos
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bartisanal.db'
@@ -122,7 +123,8 @@ def admin_only(f):
 @app.route("/")
 def home():
     productos = db.session.query(Producto).all()
-    return render_template("index.html", productos=productos,current_user=current_user)
+
+    return render_template("index.html", productos=productos, current_user=current_user)
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -251,13 +253,16 @@ def editar_prod(prod_id):
         stock=prod.stock
     )
     if edit_prod.validate_on_submit():
-        prod.imagen = edit_prod.imagen.data,
-        prod.nombre_producto = edit_prod.nombre.data,
-        prod.descr_producto = edit_prod.descr_prod.data,
-        prod.categoria = edit_prod.categoria.data,
-        prod.precio = edit_prod.precio.data,
+        prod.imagen = edit_prod.imagen.data
+        prod.nombre_producto = edit_prod.nombre.data
+        prod.descr_producto = edit_prod.descr_prod.data
+        prod.categoria = edit_prod.categoria.data
+        prod.precio = edit_prod.precio.data
         prod.stock = edit_prod.stock.data
+
+        db.session.add(prod)
         db.session.commit()
+        print(prod.categoria)
         return redirect(url_for("show_prod", prod_id=prod.id))
 
     return render_template("nuevo_prod.html", form=edit_prod, is_edit=True, current_user=current_user)

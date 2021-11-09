@@ -54,10 +54,12 @@
 
 			</div>
 		</section>
-
+		<div style="margin-top:100px;" class="call-to-action-container text-center border-bottom border-top mb-5 py-5">
+			<p>A continuación, se muestra nuestro catálogo de productos.</p>
+			<p>Escoge el que más te guste.</p>
+		</div>
 		<section class="row products-masonry-container">
 			<div class="col">
-
 				<div class="products-masonry-filter mt-4 mt-lg-5 mb-4 border-top border-bottom py-3">
 					<ul class="nav nav-pills nav-fill">
 						<li class="nav-item">
@@ -81,67 +83,18 @@
 				<div class="products-masonry">
 					<div class="tab-content">
 						<div class="tab-pane fade show active" id="todos">
-						{% for p in productos: %}
 							<div class="card-columns">
-								<div class="card">
-									<img src="{{ p.imagen }}" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">{{ p.nombre_producto }}</h5>
-										<p class="card-text">${{ p.precio }}</p>
-										<a href="{{ url_for('show_prod', prod_id=p.id) }}" class="btn btn-outline-primary font-weight-light text-uppercase">Ver producto</a>
+								{% for p in productos: %}
+									<div class="card">
+										<img src="{{ p.imagen }}" alt="" class="card-img-top">
+										<div class="card-body">
+											<h5 class="card-title">{{ p.nombre_producto }}</h5>
+											<p class="card-text">${{ p.precio }}</p>
+											<a href="{{ url_for('show_prod', prod_id=p.id) }}" class="btn btn-outline-primary font-weight-light text-uppercase">Ver producto</a>
+										</div>
 									</div>
-								</div>
-						{% endfor %}
-
-<!--								<div class="card">-->
-<!--									<img src="static/img/mesa1.jpg" alt="" class="card-img-top">-->
-<!--									<div class="card-body">-->
-<!--										<h5 class="card-title">Lorem ipsum.</h5>-->
-<!--										<p class="card-text">$10</p>-->
-<!--									</div>-->
-<!--								</div>-->
-
-								<div class="card">
-									<img src="static/img/bolso3.jpg" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-
-								<div class="card">
-									<img src="static/img/bolso5.jpg" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-
-								<div class="card">
-									<img src="static/img/silla6.jpg" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-
-								<div class="card">
-									<img src="static/img/silla2.jpg" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-
-								<div class="card">
-									<img src="static/img/mesa6.jpg" alt="" class="card-img-top">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
+								{% endfor %}
 							</div>
-
 						</div>
 
 						<div class="tab-pane fade" id="porcelana">

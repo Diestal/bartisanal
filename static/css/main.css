@@ -9293,3 +9293,10 @@ p:last-child {
 .post .post-meta {
   font-size: 12px;
 }
+.masthead {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+.login-container {
+    padding: 100px;
+}
