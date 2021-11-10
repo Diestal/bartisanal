@@ -99,150 +99,68 @@
 
 						<div class="tab-pane fade" id="porcelana">
 							<div class="card-columns">
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla1.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla2.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla3.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla4.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla5.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/silla6.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
+								{% for p in productos: %}
+									{% if p.categoria == "1": %}
+										<div class="card">
+											<img src="{{ p.imagen }}" alt="" class="card-img-top">
+											<div class="card-body">
+												<h5 class="card-title">{{ p.nombre_producto }}</h5>
+												<p class="card-text">${{ p.precio }}</p>
+												<a href="{{ url_for('show_prod', prod_id=p.id) }}" class="btn btn-outline-primary font-weight-light text-uppercase">Ver producto</a>
+											</div>
+										</div>
+									{% endif %}
+								{% endfor %}
 							</div>
 						</div>
 
 						<div class="tab-pane fade" id="muñequería">
+
 							<div class="card-columns">
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa1.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa2.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa3.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa4.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa5.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/mesa6.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
+								{% for p in productos: %}
+									{% if p.categoria == "2": %}
+										<div class="card">
+											<img src="{{ p.imagen }}" alt="" class="card-img-top">
+											<div class="card-body">
+												<h5 class="card-title">{{ p.nombre_producto }}</h5>
+												<p class="card-text">${{ p.precio }}</p>
+												<a href="{{ url_for('show_prod', prod_id=p.id) }}" class="btn btn-outline-primary font-weight-light text-uppercase">Ver producto</a>
+											</div>
+										</div>
+									{% endif %}
+								{% endfor %}
 							</div>
 						</div>
 
 						<div class="tab-pane fade" id="Country">
 							<div class="card-columns">
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso1.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso4.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso3.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso5.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso6.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
-								<div class="card">
-									<img class="card-img-top" src="static/img/bolso2.jpg" alt="">
-									<div class="card-body">
-										<h5 class="card-title">Lorem ipsum.</h5>
-										<p class="card-text">$10</p>
-									</div>
-								</div>
+								{% for p in productos: %}
+									{% if p.categoria == "3": %}
+										<div class="card">
+											<img src="{{ p.imagen }}" alt="" class="card-img-top">
+											<div class="card-body">
+												<h5 class="card-title">{{ p.nombre_producto }}</h5>
+												<p class="card-text">${{ p.precio }}</p>
+												<a href="{{ url_for('show_prod', prod_id=p.id) }}" class="btn btn-outline-primary font-weight-light text-uppercase">Ver producto</a>
+											</div>
+										</div>
+									{% endif %}
+								{% endfor %}
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div class="call-to-action-container text-center border-bottom border-top mb-5 py-5">
-					<p>Visita nuestra tienda completa y escoge el producto que más te guste</p>
-					<a href="#" class="btn btn-outline-primary font-weight-light text-uppercase">Ver tienda</a>
+					{% if not current_user.is_authenticated: %}
+						<p>Inicia sesión y escoge el producto que más te guste</p>
+						<a href="/login" class="btn btn-outline-primary font-weight-light text-uppercase">Iniciar sesión</a>
+					{% elif current_user.id != 2 and current_user.id != 3: %}
+						<p>Escoge el producto que más te guste</p>
+					{% else: %}
+						<p>Puedes añadir más productos al catálogo con este botón:</p>
+						<a href="{{ url_for('nuevo_producto') }}" class="btn btn-outline-primary font-weight-light text-uppercase">Añadir producto</a>
+					{% endif %}
 				</div>
 
 			</div>

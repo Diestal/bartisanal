@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort, request
+import stripe
+from flask import Flask, render_template, redirect, url_for, flash, abort, request, jsonify
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -9,9 +10,17 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, CrearProducto, RegisterUserForm
 from flask_gravatar import Gravatar
+import os
 
 # Instanciaciones de frameworks y variables de API (.env)
 app = Flask(__name__)
+# setup stripe"
+stripe_keys = {
+    "secret_key": "sk_test_51Ju9wXDQumNqsSPmBYhEpLgWiCEfUjqgwvBSClPT7lciY0uBBYRQsgxpD5CkECdtjSuuCnRZcHE8HeJDXd7MofvO00eZqH34qf",
+    "publishable_key": "pk_test_51Ju9wXDQumNqsSPm6uXiFtdxYSgOpTrqZ4kkn9l4bbdIDhSy3iEZ5WCDtv4GlVkyb5iCyRLBS3PJqSzC0D0HsbUG002AlkYAOY"
+}
+stripe.api_key = stripe_keys["secret_key"]
+# SETUP API
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
@@ -111,6 +120,7 @@ db.create_all()
 
 # Decoradores para el poryecto
 
+carrito = []
 
 def admin_only(f):
     @wraps(f)
@@ -121,6 +131,7 @@ def admin_only(f):
     return decorated_function
 
 # Configuración de las rutas del servidor
+
 @app.route("/")
 def home():
     productos = db.session.query(Producto).all()
@@ -231,7 +242,7 @@ def register():
 @app.route('/logout')
 def logout():
     logout_user()
-    return "<script>window.alert('Usted acaba de cerrar sesión.')</script>", redirect(url_for('home'))
+    return redirect(url_for('home'))
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -252,9 +263,9 @@ def login():
         else:
             login_user(user)
             if user.sexo == "F":
-                return f"<script>window.alert('¡Bienvenida, {user.nombre}!')</script>", redirect(url_for('home'))
+                return redirect(url_for('home'))
             else:
-                return f"<script>window.alert('¡Bienvenido, {user.nombre}!')</script>", redirect(url_for('home'))
+                return redirect(url_for('home'))
     return render_template("login_1.html", form=form, current_user=current_user)
 
 
@@ -262,9 +273,10 @@ def login():
 @app.route("/producto/<int:prod_id>", methods=["GET", "POST"])
 def show_prod(prod_id):
     form = CommentForm()
-    requested_prod = db.session.query(Producto).get(prod_id)
+    requested_prod = Producto.query.get(prod_id)
 
     if form.validate_on_submit():
+        total = request.args.get("stocklist")
         if not current_user.is_authenticated:
             flash("Tienes que iniciar sesión para dejar una reseña o usar el carrito de compras.")
             return redirect(url_for("login"))
@@ -335,7 +347,93 @@ def del_prod(prod_id):
     db.session.commit()
     return redirect(url_for('home'))
 
-# Módulo de pasarela de compra
+# Módulo de pasarela de compra y pago
+
+
+@app.route("/añdir-carrito/<int:prod_id>", methods=['GET', 'POST'])
+def anadir_carrito(prod_id):
+    prod_added = Producto.query.get(prod_id)
+    if prod_added.stock > 0:
+        carrito.append(prod_added)
+        print(carrito)
+        return redirect(url_for('show_prod', prod_id=prod_id))
+    else:
+        flash("Pedimos disculpas, no hay stock suficiente para añadir a carrito.")
+        return redirect(url_for('home'))
+
+
+line_items = []
+
+
+@app.route("/carrito", methods=['POST', 'GET'])
+def mostrar_carrito():
+    total_carrito = 0
+    total_productos = 0
+    for _ in carrito:
+        total_carrito += _.precio
+        total_productos += 1
+
+    return render_template(
+        "carrito.html",
+        current_user=current_user,
+        carrito=carrito,
+        total_compra=total_carrito,
+        total_productos=total_productos,
+        line_items=line_items
+    )
+
+@app.route("/config")
+def get_publishable_key():
+    stripe_config = {"publicKey": stripe_keys["publishable_key"]}
+    return jsonify(stripe_config)
+
+
+@app.route("/create-checkout-session")
+def create_checkout_session():
+    domain_url = "http://localhost:5000/"
+    stripe.api_key = stripe_keys["secret_key"]
+    if request.method == 'GET':
+        checked = []
+        for p in carrito:
+            if p not in checked:
+                checked.append(p)
+                quantity = carrito.count(p)
+                nombre_p_ord = p.nombre_producto
+                currency = "cop"
+                amount = p.precio
+                image = p.imagen
+                producto_ordenado = {
+                    "name": f"{nombre_p_ord}",
+                    "quantity": f"{quantity}",
+                    "currency": f"{currency}",
+                    "amount": f"{(amount*quantity)*100}",
+                }
+                line_items.append(producto_ordenado)
+            else:
+                print(f"{p} ya se ha verificado dentro de productos ordenados.")
+            print(line_items)
+
+    try:
+        # Create new Checkout Session for the order
+        # Other optional params include:
+        # [billing_address_collection] - to display billing address details on the page
+        # [customer] - if you have an existing Stripe Customer ID
+        # [payment_intent_data] - capture the payment later
+        # [customer_email] - prefill the email input in the form
+        # For full details see https://stripe.com/docs/api/checkout/sessions/create
+
+        # ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
+        checkout_session = stripe.checkout.Session.create(
+            success_url=domain_url + "success?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=domain_url + "cancelled",
+            payment_method_types=["card"],
+            mode="payment",
+            line_items=line_items,
+        )
+        return jsonify({"sessionId": checkout_session["id"]})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
 
 # Módulo CRUD por API
 
