@@ -1,5 +1,5 @@
 import stripe
-from flask import Flask, render_template, redirect, url_for, flash, abort, request, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, abort, request, jsonify, make_response
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -8,8 +8,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, CrearProducto, RegisterUserForm
+from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, CrearProducto, RegisterUserForm,\
+    CambiarContrasena
 from flask_gravatar import Gravatar
+import correos
 import os
 
 # Instanciaciones de frameworks y variables de API (.env)
@@ -245,6 +247,34 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route("/cambiar-contrasena", methods=['POST', 'GET'])
+def cambiar_contrasena():
+    form = CambiarContrasena()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.new_password.data
+
+        user = User.query.filter_by(email=email).first()
+    # Email doesn't exist or password incorrect.
+        if user:
+            print(User.query.filter_by(email=form.email.data).first())
+            # User already exists
+
+            hash_and_salted_password = generate_password_hash(
+                form.new_password.data,
+                method='pbkdf2:sha256',
+                salt_length=8
+            )
+            user.contrasena = hash_and_salted_password
+            db.session.add(user)
+            db.session.commit()
+            correos.enviar_correo_cambio_contrasena(email=email, contrasena=password)
+            flash("Su contraseña ha sido cambiada con éxito, verifique su correo para saber que hizo el cambio de contraseña.")
+            login_user(user)
+            return redirect(url_for('cambiar_contrasena'))
+
+    return render_template("cambio-contraseña.html", form=form, current_user=current_user)
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -382,6 +412,10 @@ def mostrar_carrito():
         line_items=line_items
     )
 
+@app.route("/success")
+def thanks():
+    return render_template('thanks.html')
+
 @app.route("/config")
 def get_publishable_key():
     stripe_config = {"publicKey": stripe_keys["publishable_key"]}
@@ -436,6 +470,7 @@ def create_checkout_session():
 
 
 # Módulo CRUD por API
+
 
 # Módulo de reportes
 

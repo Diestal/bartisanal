@@ -87,6 +87,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Ingresar")
 
 
+class CambiarContrasena(FlaskForm):
+    email = StringField("Ingrese correo con el que se registró", validators=[DataRequired()])
+    new_password = PasswordField("Ingrese su nueva contraseña", validators=[DataRequired()])
+    submit = SubmitField("Cambiar contraseña")
+
+
 class CommentForm(FlaskForm):
     comment_text = CKEditorField("Comment", validators=[DataRequired()])
     submit = SubmitField("Submit Comment")

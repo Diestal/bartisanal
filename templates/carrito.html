@@ -236,13 +236,13 @@ a:hover {
             </div>
             <form>
                 <p>ENVÍO</p> <select>
-                    <option class="text-muted">Envío estándar - &dollar;15000</option>
+                    <option class="text-muted">Envío contraentrega - &dollar;15000</option>
                 </select>
-                <p>GIVE CODE</p> <input id="code" placeholder="Enter your code">
+                <p>GIVE CODE</p> <input id="code" placeholder="Ingresa referencia de recomendación">
             </form>
             <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                 <div class="col">PRECIO TOTAL</div>
-                <div class="col text-right">&dollar; {{ total_compra + 15000 }}</div>
+                <div class="col text-right">&dollar; {{ total_compra }}</div>
             </div> <a class="btn" id="submitBtn">CHECKOUT</a>
         </div>
     </div>

@@ -9,7 +9,9 @@
     <title>Store</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,700|Shadows+Into+Light" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
     <!-- Custom styles for this template -->
     <link href="{{ url_for('static', filename='narrow-jumbotron.css') }}" rel="stylesheet">
@@ -22,20 +24,23 @@
         <nav>
           <ul class="nav nav-pills float-right">
             <li class="nav-item">
-              <a class="nav-link active" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link active" href="{{ url_for('home') }}">Inicio <span class="sr-only">(current)</span></a>
             </li>
           </ul>
         </nav>
-        <h3 class="text-muted">Store</h3>
+        <h3 class="text-muted">Bartisanal</h3>
       </div>
 
       <div class="jumbotron">
-        <h1 class="display-3">Thank You</h1>
-        <p class="lead">You will receive a link to The Product in your email.</p>
+        <h1 class="display-3">Muchas gracias</h1>
+        <p class="lead">Recibirá el resumen de su compra en su correo electrónico.</p>
+        <a href="#">
+          Descargar reporte de compra.
+        </a>
       </div>
 
       <footer class="footer">
-        <p>&copy; Store 2017</p>
+        <p>&copy; Bartisanal 2021</p>
       </footer>
 
     </div> <!-- /container -->

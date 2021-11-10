@@ -19,13 +19,11 @@
                     <span class="meta">Creado el {{prod.fecha_creacion}}</span>
                 </div>
             </div>
-            {% if current_user.id == 1: %}
             <span class="meta">
                 <a type="submit" href="{{ url_for('anadir_carrito', prod_id=prod.id) }}" class="btn btn-dark btn-rounded mr-1" data-toggle="tooltip" title="" data-original-title="Add to cart">
                     <i class="fa fa-shopping-cart"></i>
                 </a>
                 <button class="btn btn-secondary btn-rounded">Comprar ahora</button>
-            {% endif %}
             </span>
         </div>
     </div>

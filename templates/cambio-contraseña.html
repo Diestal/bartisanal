@@ -13,7 +13,7 @@
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="page-heading">
             <h1>Log In</h1>
-            <span class="subheading">¡Bienvenido de nuevo!</span>
+            <span class="subheading">¡Bienvenido!</span>
           </div>
         </div>
       </div>
@@ -32,7 +32,6 @@
         {% endif %}
       {% endwith %}
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
-        <a href="{{url_for('cambiar_contrasena')}}" >¿Olvidó su contraseña?</a>
       </div>
     </div>
   </div>
