@@ -23,7 +23,6 @@
                 <a type="submit" href="{{ url_for('anadir_carrito', prod_id=prod.id) }}" class="btn btn-dark btn-rounded mr-1" data-toggle="tooltip" title="" data-original-title="Add to cart">
                     <i class="fa fa-shopping-cart"></i>
                 </a>
-                <button class="btn btn-secondary btn-rounded">Comprar ahora</button>
             </span>
         </div>
     </div>
@@ -54,15 +53,16 @@
 
 
                 <div class="col-lg-8 col-md-10 mx-auto comment">
-                    {% for comment in prod.comments: %}
+                    {% for comment in prod.resenas: %}
                     <ul class="commentList">
                         <li>
                             <div class="commenterImage">
-                                <img src="{{ comment.comment_author.email | gravatar }}"/>
+                                <img src="{{ comment.resena_autor.email | gravatar }}"/>
                             </div>
                             <div class="commentText">
+                                <span class="date sub-text">Calificación del producto: {{comment.calificacion}}⭐</span>
                                 {{comment.text|safe}}
-                                <span class="date sub-text">{{comment.comment_author.name}}</span>
+                                <span class="date sub-text">{{comment.resena_autor.nombre}}</span>
 
                             </div>
                         </li>

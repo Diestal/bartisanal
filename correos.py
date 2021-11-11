@@ -27,5 +27,38 @@ def enviar_correo_cambio_contrasena(email, contrasena):
         )
 
 
-def anunciar_compra():
-    pass
+def anunciar_compra(email, valor_total, user):
+    cambio_contrasena = f"Apreciado cliente. Se notifica que se recibió el pago de su compra" \
+                        f"el día {date.today()}.\n" \
+                        f"Se facturó un total de ${valor_total}." \
+                        f"Dirección de envío: {user.direccion}, ciudad de {user.ciudades.nombre_ciudad}, " \
+                        f"depto: {user.departamentos.nombre_depto}.\n" \
+                        f"Si presenta alguna queja o reclamo, por este mismo medio y correo."
+    mail = f"Subject: Compra efectuada\n\n{cambio_contrasena}"
+
+    with smtplib.SMTP("smtp.gmail.com") as connection:
+        connection.starttls()
+        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs=email,
+            msg=mail.encode('utf-8')
+        )
+
+def anunciar_venta(valor_total, user):
+    cambio_contrasena = f" Se notifica que se recibió el pago de la compra de productos registrados en La plataforma Stripe" \
+                        f" el día {date.today()}.\n" \
+                        f"Se facturó un total de ${valor_total}." \
+                        f"Dirección de envío: {user.direccion}, ciudad de {user.ciudades.nombre_ciudad}, " \
+                        f"depto: {user.departamentos.nombre_depto}.\n" \
+                        f"Si presenta alguna queja o reclamo, por este mismo medio y correo."
+    mail = f"Subject: Venta efectuada\n\n{cambio_contrasena}"
+
+    with smtplib.SMTP("smtp.gmail.com") as connection:
+        connection.starttls()
+        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs=MY_EMAIL,
+            msg=mail.encode('utf-8')
+        )

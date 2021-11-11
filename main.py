@@ -1,4 +1,5 @@
 import stripe
+import pdfkit
 from flask import Flask, render_template, redirect, url_for, flash, abort, request, jsonify, make_response
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
@@ -35,7 +36,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-
+config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
 # Cargador de usuarios
 @login_manager.user_loader
 def load_user(user_id):
@@ -313,8 +314,10 @@ def show_prod(prod_id):
 
         new_comment = Resena(
             text=form.comment_text.data,
-            comment_author=current_user,
-            parent_post=requested_prod
+            texto_resena=form.comment_text.data,
+            calificacion=form.calificacion.data,
+            resena_autor=current_user,
+            productos=requested_prod
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -400,9 +403,11 @@ def mostrar_carrito():
     total_carrito = 0
     total_productos = 0
     for _ in carrito:
+        _actual = Producto.query.get(_.id)
         total_carrito += _.precio
         total_productos += 1
-
+    correos.anunciar_compra(current_user.email, total_carrito, current_user)
+    correos.anunciar_venta(total_carrito, current_user)
     return render_template(
         "carrito.html",
         current_user=current_user,
@@ -473,7 +478,27 @@ def create_checkout_session():
 
 
 # Módulo de reportes
+@app.route("/get-pdf", methods=['POST'])
+def get_pdf():
+    if request.method == 'POST':
+        user = User.query.get(current_user.id)
+        depto = Departamento.query.get(user.depto_id)
+        ciudad = Ciudad.query.get(user.ciudad_id)
+        orders = line_items
+        rendered = render_template('carrito.html', current_user=current_user, depto=depto,
+                                   ciudad=ciudad, orders=orders)
+        pdf = pdfkit.from_string(rendered, False, configuration=config)
+        response = make_response(pdf)
+        response['content-Type'] = 'application/pdf'
+        response['content-Disposition'] = 'attachment; filename:output.pdf'
 
+        return response
 # Inicialización de servidor
+
+
+@app.route("/contacto")
+def contacto():
+    return render_template("contacto.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
